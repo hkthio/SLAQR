@@ -1,1 +1,5 @@
+Surface wave locator 
+
+Jascha Polet, Cal Poly Pomona
+Hong Kie Thio, AECOM
 Before use, edit the setenv lines in Scripts/SLAQR-init.csh and add to your .cshrc
