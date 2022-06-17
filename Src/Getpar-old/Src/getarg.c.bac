@@ -1,0 +1,115 @@
+#include	<stdio.h>
+
+char *arg_subname;
+char *arg_arglist;
+int   arg_initflag;
+
+#ifdef FORTRAN
+setarg_(arglist,subname,dum1,dum2)
+int dum1, dum2;
+#else
+setarg(arglist,subname)
+#endif
+char *subname, *arglist;
+   {
+	arg_subname= subname;
+	arg_arglist= arglist;
+	arg_initflag= 1;
+   }
+
+#ifdef FORTRAN
+endarg_()
+#else
+endarg()
+#endif
+   {
+	arg_subname= NULL;
+	arg_arglist= NULL;
+	arg_initflag= 0;
+   }
+
+#ifdef FORTRAN
+getarg_(name,type,val,dum1,dum2)
+int dum1, dum2;
+#else
+getarg(name,type,val)
+#endif
+char *name, *type;
+int *val;
+   {
+	char *p, *pname, *pequal, *parg, *plast, *sptr, clast;
+	float *fptr;
+	double atof();
+	int nfound;
+
+	if(arg_initflag == 0)
+	   {
+		fprintf(stderr,"getarg: 'setarg not (properly) called\n");
+		exit(-1);
+	   }
+	p= arg_arglist;
+	nfound= 0;
+
+  loop:
+	while( *p == ' ' || *p == '\t' ) p++;
+	if(*p == '\0') return(nfound);
+	pname= p;
+	while( *p != '\0' && *p != '=') p++;
+	if(*p == '\0') return(nfound);
+	pequal= p;
+	*p++ = '\0';
+	if(*p == '\0')
+	   {
+		*pequal= '=';
+		return(nfound);
+	   }
+	if( *p == '\'') /* quoted string */
+	   {
+		p++;
+		parg= p;
+		while(*p)
+		   {
+			if(*p == '\'' && p[-1] != '\\') break;
+			p++;
+		   }
+	   }
+	 else
+	   {
+		parg= p;
+		while( *p && *p != ' ' && *p != '\t') p++;
+	   }
+	clast= *p;
+	plast= p;
+	*p = '\0';
+	if(strcmp(pname,name) == 0) /* found name */
+	   {
+		switch(*type)
+		   {
+			case 'd':
+				*val= atol(parg);
+				break;
+			case 'f':
+				fptr= (float *)val;
+				*fptr= atof(parg);
+				break;
+			case 's':
+				sptr= (char *)val;
+				while(*parg)
+				   {
+					if(*parg == '\'' && parg[-1] == '\\')
+						sptr--;
+					*sptr++ = *parg++;
+				   }
+				*sptr= '\0';
+				break;
+			default:
+				fprintf(stderr,"getarg (%s): unknown type =%c\n",*type);
+				exit(-1);
+		   }
+		nfound++;
+	   }
+	*pequal= '=';
+	*plast= clast;
+	if(*p != '\0') p++;
+	goto loop;
+   }

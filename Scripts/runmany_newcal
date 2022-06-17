@@ -1,0 +1,12 @@
+#!/bin/tcsh -f
+set i = 0
+date > timeint
+set list = `ls *.xyz`
+foreach file ($list)
+	set slice = $file:r
+	echo slice is $slice
+        ${SLAQR_HOME}/Scripts/plottimeslice_newcal $slice	
+	@ i++
+end
+date >> timeint
+echo number of runs $i >> timeint

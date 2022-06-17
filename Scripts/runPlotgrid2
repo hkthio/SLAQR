@@ -1,0 +1,3 @@
+for i do 
+ ./plotgridWCat_v30 $i /home/hkthio/Locator/v0.3/Movierun/070223230000-v6/o_time
+done

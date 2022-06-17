@@ -1,0 +1,239 @@
+#!/bin/tcsh -f
+# Usage: plottimeslice [absolute time of slice] [optional window length in sec]
+#	time format is YRMODYHRMISC with four digit YR
+#	if no window length is given, 12 hours is assumed
+#	window length reflects the length of the stacked amplitude trace shown,
+#		axes are 10% longer for better visibility of current data value
+# This script assumes that an event catalog has been created in GMT format, is
+#	present in the current directory and is called LocNEICCat.txt. This file
+#	can be created by GetNEICCatForLoc.pl
+set SCR = ${SLAQR_HOME}/Scripts
+
+makecpt -D -Cjet -Qi -T-8.5/-5/1 -Z > amp2.cpt
+alias calc 'awk "BEGIN{ print \!* }" '
+alias roundint 'awk "BEGIN{ print int( \!* ) + 1 }" '
+alias truncint 'awk "BEGIN{ print int( \!* ) }" '
+
+gmtset MEASURE_UNIT		= inch
+gmtset PAPER_MEDIA		= a4
+
+# Calibrationvalues to translate stacked amplitude into magnitude
+set v30_A0 = -1.363541e+01
+set v30_A1 =  1.280498e+00
+set v60_A0 = -1.390322e+01
+set v60_A1 = 1.336573e+00
+set v100_A0 = -1.425351e+01
+set v100_A1 = 1.343207e+00
+set d100_A0 = -1.384989e+01
+set d100_A1 = 1.358300e+00
+
+set ANNOT_FONT_SECONDARY = Courier
+set HEADER_FONT = Courier
+set LABEL_FONT = Courier
+set minmag = 4.5
+set maxmag = 9.5
+set minamp = `calc (10**($v60_A0+$v60_A1*$minmag))` 
+#echo minamp = $minamp
+
+set catfile = LocNEICCat.txt
+
+# calculate start time for trace of stacked amplitude 
+set timeslice = $1
+set narg = $#argv
+#echo $narg arguments
+if ($narg == 1) then
+	set duration = 43200
+else
+	if ($narg == 0) then
+		echo need time of plot as argument: execution stopped
+		exit
+	endif
+	set duration = $2
+endif
+set xyzfchk = `ls $timeslice.xyz | wc | awk '{print $1}' `
+if ($xyzfchk != 1) then
+	echo no $timeslice.xyz file present: execution stopped
+	exit
+endif
+
+set t = `$SCR/translatetime.pl $timeslice -$duration`
+set sdate = $t[1]
+set stime = $t[2]
+set startdattimStack = $t[3]
+#echo time of slice = $timeslice  length of amp trace in sec = $duration  startdate= $sdate  starttime=$stime
+
+set axisend = `calc ($duration/10)`
+set t = `$SCR/translatetime.pl $timeslice $axisend`
+set edate = $t[1]
+set etime = $t[2]
+set enddattimStack = $t[3]
+#echo axisend= $axisend enddate= $edate  endtime=$etime
+
+set tdatsend = `$SCR/translatetime.pl $timeslice 0`
+set date = $tdatsend[1]
+set atime = $tdatsend[2]
+set enddattimPlot = $tdatsend[3]
+
+set R1 = `$SCR/translatetimeGMT.pl $startdattimStack`
+set R2 = `$SCR/translatetimeGMT.pl $enddattimStack`
+set Rdatsend = `$SCR/translatetimeGMT.pl $enddattimPlot`
+#echo $R1 $R2 $Rdatsend
+
+# want annotated tick marks for time along trace
+set hours = `calc (1.1*$duration)/(3600)`
+set days = `calc (1.1*$duration)/86400`
+set tothours = `truncint (1.1*$duration)/(3600)`
+#echo ticks are $hours $days
+set trouhours = `roundint (1.1*$duration)/(3600*5)`
+set troudays = `roundint (1.1*$duration)/86400`
+set trunhours = `truncint (1.1*$duration)/(3600*5)`
+set trundays = `truncint (1.1*$duration)/86400`
+#echo round are $trouhours $troudays
+#echo truncated are $trunhours $trundays
+# assume here that the plot window length will never be less than a few hours or more than a few days
+# else the ticks will need to be updated accordingly
+if ($trundays == "0") then
+#need to have at least one day marked along entire trace
+#       echo days is zero
+        set tickdays = 1D
+	gmtset TIME_INTERVAL_FRACTION 0.05
+else
+#mark each separate day
+#       echo days is not zero
+        set tickdays = 1D
+endif
+if ($trunhours == "0") then
+        set tickhours =  15M
+        set ftickhours =  5M
+else
+        set tickhours = "$trouhours"H
+        set ftickhours = 1H
+	if ($trundays > 1) then
+        	set tickhours = 12H
+	endif
+endif
+#echo ticks are $tickhours $tickdays
+#echo timeslice = $timeslice mamp = $minmag
+
+# find the stacked amplitude file that contains the current time slice
+set list = `ls *.stackamp`
+foreach file ($list)
+        set stackbeg = $file:r:r
+        set stackend = $file:r:e
+#	echo stackbeg = $stackbeg stackend = $stackend timeslice = $timeslice
+	if ($timeslice >= $stackbeg && $timeslice <= $stackend ) then
+# this file contains the location of the maximum stacked amplitude for this timeslice
+#		echo $file contains useful stacked amplitudes
+# originally only the loc for amp greater than $5 was plotted, but has been changed
+		set locr = `awk '$1==tm {printf "%6.1f %5.1f", $3,$4}' tm=$timeslice $file`
+		set lonr = $locr[1]
+		set latr = $locr[2]
+#		echo latr = $latr  lonr = $lonr
+		set magnow = `awk '$1==tm {printf (log($5/3)/log(10))/slope - interc/slope}' slope=$v60_A1 interc=$v60_A0 tm=$timeslice $file `
+		set maground = `awk '$1==tm {printf "%3.1f", (log($5/3)/log(10))/slope - interc/slope}' slope=$v60_A1 interc=$v60_A0 tm=$timeslice $file `
+		set stampslcfl = $file
+	endif
+end
+
+set xyzfile = ${timeslice}.xyz
+set xyzfhlns = `head -1 $xyzfile`
+
+psbasemap -JA120/0/4i -R0/360/-90/90 -B30 -P -K -X0.15 -Y7.00  >$timeslice.ps
+psxy $xyzfile -H$xyzfhlns -Sh0.0450i -R -JA -Camp2.cpt -O -K >>$timeslice.ps
+gmtset GRID_PEN 0.3p/150/150/150
+pscoast -A5000 -Dl -N1/1/255 -JA -R -Bg60/g30 -W1/255 -O -K >>$timeslice.ps
+gmtset GRID_PEN 0.1p
+#plot location of maximum stacked amplitude if the amplitude is greater than boundary value
+#print error message if not available
+#column number 8 is magnitude, column 5 is stacked amplitude (as used in tor-file)
+awk '$1==tm && $5>= mamp {print $3,$4}' tm=$timeslice mamp=$minamp $stampslcfl | psxy -R -JA -Sc0.05 -G0/0/0       -V -O -K -W1/149/135/255 >> $timeslice.ps
+psbasemap -JA-60/0/4i -R0/360/-90/90  -B30 -O -K -X4.01  >>$timeslice.ps
+psxy $xyzfile -H$xyzfhlns -Sh0.0450i -R -JA -Camp2.cpt -O -K >>$timeslice.ps
+gmtset GRID_PEN 0.3p/150/150/150
+pscoast -A5000 -Dl -N1/1/255 -JA -R -W1/255 -Bg60/g30 -O -K  >>$timeslice.ps
+gmtset GRID_PEN 0.1p
+awk '$1==tm && $5>= mamp {print $3,$4}' tm=$timeslice mamp=$minamp $stampslcfl | psxy -R -JA -Sc0.05 -G0/0/0       -V -O -K -W1/149/135/255 >> $timeslice.ps
+#echo "row 2"
+psbasemap -JA180/89/4i -R0/360/-90/90  -B30 -O -K -X-4.01 -Y-4.01 >>$timeslice.ps
+psxy $xyzfile -H$xyzfhlns -Sh0.0450i -R -JA -Camp2.cpt -O -K >>$timeslice.ps
+gmtset GRID_PEN 0.3p/150/150/150
+pscoast -A5000 -Dl -N1/1/255 -JA -R -W1/255 -Bg60/g30 -O -K >>$timeslice.ps
+gmtset GRID_PEN 0.1p
+awk '$1==tm && $5>= mamp {print $3,$4}' tm=$timeslice mamp=$minamp $stampslcfl | psxy -R -JA -Sc0.05 -G0/0/0       -V -O -K -W1/149/135/255 >> $timeslice.ps
+psbasemap -JA0/-89/4i -R0/360/-90/90  -B30 -O -K -X4.01  >>$timeslice.ps
+psxy $xyzfile -H$xyzfhlns -Sh0.0450i -R -JA -Camp2.cpt -O -K >>$timeslice.ps
+gmtset GRID_PEN 0.3p/150/150/150
+pscoast -A5000 -Dl -N1/1/255 -JA -R -W1/255 -Bg60/g30 -O -K >>$timeslice.ps
+gmtset GRID_PEN 0.1p
+awk '$1==tm && $5>= mamp {print $3,$4}' tm=$timeslice mamp=$minamp $stampslcfl | psxy -R -JA -Sc0.05 -G0/0/0       -V -O -K -W1/149/135/255 >> $timeslice.ps
+
+set miny = 4.5
+set maxy = 9.5
+
+#echo plotboundaries $startdattimStack $enddattimStack $R1 $R2 $miny $maxy
+gmtset ANNOT_FONT_PRIMARY = Palatino-Roman
+gmtset ANNOT_FONT_SIZE_PRIMARY = 14p
+gmtset ANNOT_FONT_SECONDARY = Palatino-Roman
+gmtset ANNOT_FONT_SIZE_SECONDARY = 16p
+gmtset LABEL_FONT = Palatino-Roman
+gmtset LABEL_FONT_SIZE = 16p
+gmtset LABEL_OFFSET = 0.12i
+gmtset PLOT_DATE_FORMAT "o dd y"
+gmtset PLOT_CLOCK_FORMAT hh:mm 
+# before centering: -X-3.51 -Y-2.1  
+psbasemap -R$R1/$R2/$miny/$maxy -JX6.75/2 -Bpa"$tickhours"f"$ftickhours"Sn -Bsa"$tickdays"S -O -K -V  -X-3.40 -Y-2.1 >> $timeslice.ps 
+gmtset GRID_PEN  0.5p/155/155/155tap30_20
+psbasemap -R -JX -Ba1f1/f0.2a1g1:"Magnitude":WE -O -K -V >> $timeslice.ps 
+gmtset GRID_PEN  0.5p
+
+set list = `ls *.stackamp`
+foreach file ($list)
+        set stackbeg = $file:r:r 
+        set stackend = $file:r:e
+#	echo $file $stackbeg $stackend window asked : $startdattimStack $enddattimStack
+	if ( ($startdattimStack >= $stackbeg && $startdattimStack < $stackend ) || ( $startdattimStack < $stackbeg && $stackbeg <= $enddattimStack) ) then
+# this file contains maximum stacked amplitudes that fall within the requested time window
+#		echo $file contains useful stacked amplitude data
+		set stackfhlns = `head -1 $file | awk '{print $1}'`
+# only plot data before current timeslice
+		awk '(NR>hl) && ($1<=tl) {print $2,(log($5/3)/log(10))/slope - interc/slope}' tl=$timeslice hl=$stackfhlns slope=$v60_A1 interc=$v60_A0 $file | psxy -R$R1/$R2/$miny/$maxy -W3/0/0/205 -JX  -M -V -O -K >> $timeslice.ps
+# insert some type of diagnostic for change in number of stations in stack
+# use from http://groups.google.com/group/comp.lang.awk/msg/1509bb5dbfc686c4
+#	> $ awk '{n++;n%=1;a[n]=a[n+1];a[n+1]=$0;if(a[n+1]==a[n]){print "Mind the gap";next}}1' 
+# or awk 'NR==4{a=$1;getline;b=$1;if(a!=b){print "Change at " NR}}' testinput
+# plot a triangle on the graph if the number of stations changes, to indicate any jumps may be due to this effect
+		awk '($1<=tl){n++;n%=1;a[n]=a[n+1];a[n+1]=$9;if(a[n+1]>a[n]){print $2,(log($5/3)/log(10))/slope - interc/slope;next}}' tl=$timeslice slope=$v60_A1 interc=$v60_A0 $file  | psxy -R$R1/$R2/$miny/$maxy -JX -St0.10 -G100/100/100  -V -O -K >> $timeslice.ps
+		awk '($1<=tl){n++;n%=1;a[n]=a[n+1];a[n+1]=$9;if(a[n+1]<a[n]){print $2,(log($5/3)/log(10))/slope - interc/slope;next}}' tl=$timeslice slope=$v60_A1 interc=$v60_A0 $file  | psxy -R$R1/$R2/$miny/$maxy -JX -Si0.10 -G100/100/100  -V -O -K >> $timeslice.ps
+	endif
+end
+
+# plot marker above current data point
+awk '$1==tm {print $2,(log($5/3)/log(10))/slope - interc/slope+.1}' slope=$v60_A1 interc=$v60_A0 tm=$timeslice $stampslcfl | psxy -R$R1/$R2/$miny/$maxy -JX -Skvneedle/0.1i -G200/0/0 -W1/200/0/0 -V -O -K >> $timeslice.ps
+set timenow = `awk '( ($1<tm+1) && ($1>tm-1) ){print $1}' tm=$timeslice $stampslcfl `
+#echo $timenow $magnow 12 0 9 BC $maground
+pstext -N -R -JX -O -K << END >> $timeslice.ps
+$timenow $magnow 8 0 4 BC $maground
+END
+
+#or insert plotting of catalog here, plot only events on existing stack amp trace , length is 6.75i/1.1
+awk '{print $1,$4}' $catfile | psxy -R$R1/$Rdatsend/$miny/$maxy -Sc0.07 -W1p/255/0/0 -JX6.13636364/2 -V -O -K >> $timeslice.ps
+
+set tsl = `expr $timeslice + 0`
+
+#1,1 is now at original origin, so 5,5 is in center of four spheres
+pstext -R1/20/1/20 -Jx1/1 -O -X-0.5 -Y2.1 << END >> $timeslice.ps
+5. 5.4 14 0  9 CM $date
+5. 5.2 14 0  9 CM $atime
+5. 5.0 14 0  9 CM M=$maground
+4.6 4.8 14 0  9 CM lat:
+5.6 4.8 14 0  9 RM $latr
+4.6 4.6 14 0  9 CM lon:
+5.6 4.6 14 0  9 RM $lonr
+END
+
+echo "convert to ppm"
+gs -sPAPERSIZE=legal -sDEVICE=ppmraw -r72 -q -dNOPAUSE -sOutputFile=$timeslice.ppm -- $timeslice.ps
+pnmquant 256 $timeslice.ppm | pnmcrop | ppmtogif  > $timeslice.gif
+rm $timeslice.ppm $timeslice.ps
+
+

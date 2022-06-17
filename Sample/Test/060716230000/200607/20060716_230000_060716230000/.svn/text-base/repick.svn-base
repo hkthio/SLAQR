@@ -1,0 +1,92 @@
+qdp 500
+fileid type list kevnm kstcmp
+r TAU.LHZ.II.00
+ppk p off b off
+wh
+r KIV.LHZ.II.00
+ppk p off
+wh
+r SUR.LHZ.II.00
+ppk p off
+wh
+r RPN.LHZ.II.00
+ppk p off
+wh
+r CCM.LHZ.IU.00
+ppk p off
+wh
+r KIP.LHZ.IU.00
+ppk p off
+wh
+r WCI.LHZ.IU.00
+ppk p off
+wh
+r MA2.LHZ.IU.00
+ppk p off
+wh
+r YSS.LHZ.IU.00
+ppk p off
+wh
+r OTAV.LHZ.IU.00
+ppk p off
+wh
+r CTAO.LHZ.IU.00
+ppk p off
+wh
+r LVC.LHZ.IU.00
+ppk p off
+wh
+r SDV.LHZ.IU.00
+ppk p off
+wh
+r GNI.LHZ.IU.00
+ppk p off
+wh
+r PET.LHZ.IU.00
+ppk p off
+wh
+r KONO.LHZ.IU.00
+ppk p off
+wh
+r TSUM.LHZ.IU.00
+ppk p off
+wh
+r ULN.LHZ.IU.00
+ppk p off
+wh
+r YAK.LHZ.IU.00
+ppk p off
+wh
+r CASY.LHZ.IU.00
+ppk p off
+wh
+r SJG.LHZ.IU.00
+ppk p off
+wh
+r MAJO.LHZ.IU.00
+ppk p off
+wh
+r INCN.LHZ.IU.00
+ppk p off
+wh
+r TUC.LHZ.IU.00
+ppk p off
+wh
+r LSZ.LHZ.IU.00
+ppk p off
+wh
+r PMSA.LHZ.IU.00
+ppk p off
+wh
+r AAK.LHZ.II.00
+ppk p off
+wh
+r ARU.LHZ.II.00
+ppk p off
+wh
+r ESK.LHZ.II.00
+ppk p off
+wh
+r FFC.LHZ.II.00
+ppk p off
+wh

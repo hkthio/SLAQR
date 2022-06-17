@@ -1,0 +1,20 @@
+for i do
+echo $i
+/Applications/sac//bin/sac << tothier
+echo on
+r $i
+chnhdr o gmt 2006 120 22 13 20 00 
+evaluate to begin 6 * &1,b& + 176
+evaluate to begin 0. - &1,o& 
+getbb begin
+chnhdr allt %begin%
+chnhdr lcalda TRUE
+chnhdr lovrok TRUE
+chnhdr evla 22.15  
+chnhdr evlo -108.75
+chnhdr evdp 10 
+write over
+quit
+tothier
+done
+

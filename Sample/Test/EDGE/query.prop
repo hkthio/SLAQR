@@ -1,0 +1,6 @@
+#/Users/davidketchum/query.prop
+#Thu Aug 23 09:20:38 MDT 2007
+metadataserver=137.227.230.1
+MySQLServer=137.227.230.1
+cwbip=137.227.230.1
+queryport=2061

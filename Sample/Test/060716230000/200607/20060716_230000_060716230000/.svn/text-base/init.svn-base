@@ -1,0 +1,4 @@
+qdp 1000
+window 1 x 0 1 y 0.35 0.97
+bd X
+bw 1

@@ -1,0 +1,12 @@
+$year = unpack("a4",$date);
+$mon = unpack("\@4a2",$date);
+$day = unpack("\@6a2",$date);
+$hour = unpack("\@8a2",$date);
+$min = unpack("\@10a2",$date);
+$sec = unpack("\@12a2",$date);
+#print "Year = $year Month = $mon Day = $day Hour = $hour Min = $min Sec= $sec \n";
+$time = timegm($sec,$min,$hour,$day,$mon-1,$year-1900);
+$time2 = $time + $dur;
+($sec2,$min2,$hour2,$day2,$mon2,$year2,$wday2,$yday2,$istdst2) = gmtime($time2);
+$mon2 += 1;
+$year2 += 1900;

@@ -1,0 +1,5 @@
+nx=200
+dx=0.1
+# comment
+title="many word title"
+options=map,nogrid

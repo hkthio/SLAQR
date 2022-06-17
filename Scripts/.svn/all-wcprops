@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/USGS-Locator/!svn/ver/68/Scripts
+END
+SLAQR-10min.csh
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/USGS-Locator/!svn/ver/26/Scripts/SLAQR-10min.csh
+END
+CalLocMagWithCat.pl
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/USGS-Locator/!svn/ver/1/Scripts/CalLocMagWithCat.pl
+END
+req_EDGE.pl
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/USGS-Locator/!svn/ver/54/Scripts/req_EDGE.pl
+END
+GetNEICCatForLoc.pl
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/USGS-Locator/!svn/ver/18/Scripts/GetNEICCatForLoc.pl
+END
+translatetime.pl
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/USGS-Locator/!svn/ver/6/Scripts/translatetime.pl
+END
+SLAQR-manu-median.csh
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/USGS-Locator/!svn/ver/49/Scripts/SLAQR-manu-median.csh
+END
+process.pl
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/USGS-Locator/!svn/ver/68/Scripts/process.pl
+END
+SLAQR-manu-geomean
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/USGS-Locator/!svn/ver/46/Scripts/SLAQR-manu-geomean
+END
+makemovie.csh
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/USGS-Locator/!svn/ver/28/Scripts/makemovie.csh
+END
+runmany
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/USGS-Locator/!svn/ver/56/Scripts/runmany
+END
+runPlotgrid2
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/USGS-Locator/!svn/ver/1/Scripts/runPlotgrid2
+END
+plotgridWCat_v30
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/USGS-Locator/!svn/ver/1/Scripts/plotgridWCat_v30
+END
+runevent_id.pl
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/USGS-Locator/!svn/ver/49/Scripts/runevent_id.pl
+END
+SLAQR-manu.csh
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/USGS-Locator/!svn/ver/33/Scripts/SLAQR-manu.csh
+END
+makepar.csh
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/USGS-Locator/!svn/ver/63/Scripts/makepar.csh
+END
+translatetimeGMT.pl
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/USGS-Locator/!svn/ver/6/Scripts/translatetimeGMT.pl
+END
+reform_resp.csh
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/USGS-Locator/!svn/ver/54/Scripts/reform_resp.csh
+END
+SLAQR-median-jp.csh
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/USGS-Locator/!svn/ver/56/Scripts/SLAQR-median-jp.csh
+END
+run_EDGE.pl
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/USGS-Locator/!svn/ver/19/Scripts/run_EDGE.pl
+END
+runlocator.csh
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/USGS-Locator/!svn/ver/33/Scripts/runlocator.csh
+END
+SLAQR-median-dev.csh
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/USGS-Locator/!svn/ver/68/Scripts/SLAQR-median-dev.csh
+END
+makepar-lp.csh
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/USGS-Locator/!svn/ver/66/Scripts/makepar-lp.csh
+END
+run_yesterday.pl
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/USGS-Locator/!svn/ver/33/Scripts/run_yesterday.pl
+END
+SLAQR-crontab
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/USGS-Locator/!svn/ver/25/Scripts/SLAQR-crontab
+END
+SLAQR-test.csh
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/USGS-Locator/!svn/ver/36/Scripts/SLAQR-test.csh
+END
+plottimeslice
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/USGS-Locator/!svn/ver/62/Scripts/plottimeslice
+END

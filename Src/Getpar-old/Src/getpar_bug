@@ -1,0 +1,17 @@
+From frohme Wed Feb 11 18:00:47 1987
+Date: Wed, 11 Feb 87 18:00:37 pst
+From: Mike Frohme <frohme>
+To: clay
+Status: R
+
+Rob,
+
+     I think there is an bug in the new version of getpar.  I 
+   couldn't get booleans read from a par file without specifying
+   boo=1, or boo=0.  From dbx, it looks like booleans are returned
+   from the par file with a '\n' appended to the name.  Its an easy 
+   fix in gp_do_par_file, adding a test for '\n' for the end of name.
+   Line 421.
+   
+					-frohme
+

@@ -1,0 +1,8 @@
+#!/bin/tcsh -f
+alias roundint 'awk "BEGIN{ print int( \!* ) + 1 }" '
+
+set duration = 10.
+set trouhours = `roundint (1.1*$duration)/(3600*5)`
+
+echo $trouhours
+echo $TIME
